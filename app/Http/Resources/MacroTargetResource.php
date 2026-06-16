@@ -23,10 +23,10 @@ class MacroTargetResource extends JsonResource
             'activity_level' => $this->activity_level,
             'goal'           => $this->goal,
             'preset'         => $this->preset,
-            'daily_calories' => $this->daily_calories,
-            'protein_g'      => (float) $this->protein_g,
-            'carbs_g'        => (float) $this->carbs_g,
-            'fat_g'          => (float) $this->fat_g,
+            'daily_calories' => (int) $this->daily_calories,
+            'protein_g'      => (int) $this->protein_g,
+            'carbs_g'        => (int) $this->carbs_g,
+            'fat_g'          => (int) $this->fat_g,
             'created_at'     => $this->created_at->toISOString(),
         ];
     }
