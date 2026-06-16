@@ -2,6 +2,9 @@
 
 use App\Models\MacroTarget;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;

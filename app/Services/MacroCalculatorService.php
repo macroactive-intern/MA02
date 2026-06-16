@@ -43,9 +43,9 @@ class MacroCalculatorService
 
         return [
             'daily_calories' => (int) round($dailyCalories),
-            'protein_g'      => round($proteinG, 2),
-            'carbs_g'        => round($carbsG, 2),
-            'fat_g'          => round($fatG, 2),
+            'protein_g'      => (int) round($proteinG),
+            'carbs_g'        => (int) round($carbsG),
+            'fat_g'          => (int) round($fatG),
         ];
     }
 
