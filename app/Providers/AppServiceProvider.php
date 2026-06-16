@@ -19,6 +19,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $required = ['APP_KEY', 'APP_ENV', 'DB_CONNECTION'];
+
+        foreach ($required as $var) {
+            if (empty(env($var))) {
+                throw new \RuntimeException("Required environment variable [{$var}] is not set.");
+            }
+        }
     }
 }
