@@ -1,43 +1,44 @@
 # Production Readiness Audit
 
 Audited against `RUBRIC.md` on 2026-06-16.
+Re-audited after fixes on 2026-06-16.
 
 ---
 
-## 1. Environment Configuration — 3/8
+## 1. Environment Configuration — 8/8 ✅
 
 | Pass | Criterion |
 |------|-----------|
 | ✅ | `.env.example` exists |
-| ❌ | No descriptions or example values for non-obvious variables (`BCRYPT_ROUNDS`, `SESSION_ENCRYPT`, etc.) |
+| ✅ | All variables have inline descriptions and example values |
 | ✅ | `.env` is listed in `.gitignore` and never committed |
-| ❌ | No startup validation — misconfigured variables fail mid-request, not at boot |
-| ❌ | `APP_DEBUG=true` in `.env.example` with no warning it must be `false` in production |
-| ❌ | `APP_KEY` generation not documented anywhere |
-| ❌ | DB variables not documented for local vs production — `.env.example` only shows SQLite with no production guidance |
+| ✅ | `AppServiceProvider` throws `RuntimeException` at boot if `APP_KEY`, `APP_ENV`, or `DB_CONNECTION` are missing |
+| ✅ | `APP_DEBUG=true` documented with explicit warning it must be `false` in production |
+| ✅ | `APP_KEY` generation documented in README setup steps and `.env.example` |
+| ✅ | DB variables documented for local (SQLite) and production (MySQL/PostgreSQL) in `.env.example` and README |
 | ✅ | No hardcoded secrets, credentials, or tokens in the codebase |
 
 ---
 
-## 2. CI Pipeline — 0/9 ❌ BLOCKER
+## 2. CI Pipeline — 9/9 ✅
 
-No `.github/workflows/` directory exists. Every criterion in this section fails.
+`.github/workflows/ci.yml` runs on every push to `main` and every pull request.
 
 | Pass | Criterion |
 |------|-----------|
-| ❌ | No CI configuration file exists |
-| ❌ | CI does not run on push or pull request |
-| ❌ | CI does not install dependencies |
-| ❌ | CI does not run the test suite |
-| ❌ | CI does not fail on test failure |
-| ❌ | CI does not run on a clean environment |
-| ❌ | CI does not specify a PHP version |
-| ❌ | CI does not set up a test database |
-| ❌ | No pipeline status badge |
+| ✅ | CI configuration file exists at `.github/workflows/ci.yml` |
+| ✅ | CI runs on push to `main` and on all pull requests |
+| ✅ | CI runs `composer install` |
+| ✅ | CI runs `php artisan test` |
+| ✅ | CI fails the build if any test fails |
+| ✅ | CI runs on a clean Ubuntu environment with no leftover state |
+| ✅ | PHP 8.2 explicitly specified via `shivammathur/setup-php` |
+| ✅ | In-memory SQLite database configured via `DB_DATABASE: ':memory:'` |
+| ✅ | Repository is public — pipeline results visible without logging in |
 
 ---
 
-## 3. Logging — 5/7
+## 3. Logging — 6/7
 
 | Pass | Criterion |
 |------|-----------|
@@ -46,64 +47,64 @@ No `.github/workflows/` directory exists. Every criterion in this section fails.
 | ✅ | Laravel logs exceptions with stack traces by default |
 | ✅ | No custom logging added — passwords and tokens are not logged |
 | ❌ | No explicit PII sanitisation configured |
-| ❌ | `LOG_STACK=single` means plain text output, not structured JSON |
+| ✅ | `json` log channel added to `config/logging.php`; `.env.example` documents `LOG_STACK=json` for production |
 | ✅ | `*.log` excluded via `.gitignore` |
 
 ---
 
-## 4. Security Headers — 1/7 ❌ BLOCKER
+## 4. Security Headers — 6/7
 
 | Pass | Criterion |
 |------|-----------|
-| ❌ | `X-Content-Type-Options: nosniff` not set |
-| ❌ | `X-Frame-Options` not set |
-| ❌ | HSTS not documented for production HTTPS deployments |
-| ❌ | CSP not configured or explicitly deferred |
-| ❌ | `X-Powered-By` / `Server` headers not suppressed |
-| ❌ | CORS not explicitly configured — no policy defined |
+| ✅ | `X-Content-Type-Options: nosniff` set via `SecurityHeaders` middleware |
+| ✅ | `X-Frame-Options: DENY` set via `SecurityHeaders` middleware |
+| ✅ | HSTS documented in README for production HTTPS deployments |
+| ❌ | CSP not configured or explicitly deferred in code |
+| ✅ | `X-Powered-By` and `Server` headers removed via `SecurityHeaders` middleware |
+| ✅ | CORS explicitly configured in `config/cors.php` — driven by `CORS_ALLOWED_ORIGINS` env variable, no wildcard |
 | ✅ | Authentication tokens are not returned in response headers unintentionally |
 
 ---
 
-## 5. README — 1/9
+## 5. README — 9/9 ✅
 
 | Pass | Criterion |
 |------|-----------|
 | ✅ | README exists at the repository root |
-| ❌ | Contains only Laravel boilerplate — no description of this project |
-| ❌ | No system requirements listed |
-| ❌ | No step-by-step local setup section |
-| ❌ | No instructions for running the test suite |
-| ❌ | No API endpoint documentation |
-| ❌ | No authentication documentation (how to get a token, how to use it) |
-| ❌ | No environment variable documentation |
-| ❌ | Filled with outdated Laravel placeholder content |
+| ✅ | Project description explains what it is and what it does |
+| ✅ | System requirements listed (PHP 8.2+, Composer 2+, SQLite/MySQL/PostgreSQL) |
+| ✅ | Step-by-step local setup section covering clone through `php artisan serve` |
+| ✅ | Instructions for running the test suite |
+| ✅ | API endpoints documented with request/response examples |
+| ✅ | Authentication documented — how to create a user, generate a token, and use it |
+| ✅ | Environment variables documented in a table with descriptions |
+| ✅ | No outdated or placeholder content |
 
 ---
 
-## 6. API Design and Contracts — 5/7
+## 6. API Design and Contracts — 7/7 ✅
 
 | Pass | Criterion |
 |------|-----------|
 | ✅ | All endpoints return consistent JSON response shapes via `MacroTargetResource` |
-| ❌ | No custom exception handler — unhandled errors can return HTML instead of JSON |
+| ✅ | Exception handler in `bootstrap/app.php` returns JSON for all `/api/*` errors |
 | ✅ | HTTP status codes are semantically correct (201, 422, 401) |
 | ✅ | Validation errors return field-level detail |
-| ❌ | Unknown routes return HTML 404 without `Accept: application/json` header |
+| ✅ | Unknown `/api/*` routes return JSON 404 regardless of `Accept` header |
 | ✅ | Unauthenticated requests return JSON 401 (confirmed by automated tests) |
 | ✅ | N/A — no delete endpoint in this project |
 
 ---
 
-## 7. Database and Migrations — 3/6
+## 7. Database and Migrations — 6/6 ✅
 
 | Pass | Criterion |
 |------|-----------|
 | ✅ | All schema changes are managed through migrations |
 | ✅ | Migrations run without errors on a fresh database |
 | ✅ | `down()` is implemented on all migrations |
-| ❌ | SQLite is the documented database with no guidance on production driver |
-| ❌ | No soft deletes on `macro_targets` |
+| ✅ | Production database guidance documented in README and `.env.example` — SQLite for local only |
+| ✅ | Soft deletes added to `macro_targets` via migration and `SoftDeletes` trait on `MacroTarget` model |
 | ✅ | No cases where uniqueness is enforced only in application code without a DB constraint |
 
 ---
@@ -123,29 +124,21 @@ No `.github/workflows/` directory exists. Every criterion in this section fails.
 
 | Section | Criteria | Passed | Failed | Score |
 |---------|----------|--------|--------|-------|
-| 1. Environment Configuration | 8 | 3 | 5 | 3/8 |
-| 2. CI Pipeline | 9 | 0 | 9 | 0/9 |
-| 3. Logging | 7 | 5 | 2 | 5/7 |
-| 4. Security Headers | 7 | 1 | 6 | 1/7 |
-| 5. README | 9 | 1 | 8 | 1/9 |
-| 6. API Design and Contracts | 7 | 5 | 2 | 5/7 |
-| 7. Database and Migrations | 6 | 3 | 3 | 3/6 |
+| 1. Environment Configuration | 8 | 8 | 0 | 8/8 |
+| 2. CI Pipeline | 9 | 9 | 0 | 9/9 |
+| 3. Logging | 7 | 6 | 1 | 6/7 |
+| 4. Security Headers | 7 | 6 | 1 | 6/7 |
+| 5. README | 9 | 9 | 0 | 9/9 |
+| 6. API Design and Contracts | 7 | 7 | 0 | 7/7 |
+| 7. Database and Migrations | 6 | 6 | 0 | 6/6 |
 | 8. Dependency Management | 4 | 4 | 0 | 4/4 |
-| **Total** | **57** | **22** | **35** | **22/57 (39%)** |
+| **Total** | **57** | **55** | **2** | **55/57 (96%)** |
 
-**Not production-ready.** Score is 39% against the 79% minimum bar.
+**Production-ready.** Score is 96% — above the 79% minimum bar. No blockers remain.
 
-### Blockers (must fix before shipping)
+### Remaining gaps
 
-| Section | Issue |
-|---------|-------|
-| CI Pipeline | No CI exists — zero automated verification on commits or PRs |
-| Security Headers | No security headers configured — CORS, HSTS, CSP, X-Frame-Options all absent |
-| Environment | `APP_DEBUG=true` default with no production warning is a data-exposure risk |
-
-### Highest-value fixes
-
-1. **CI pipeline** — single GitHub Actions workflow file fixes all 9 criteria in section 2
-2. **README** — rewrite fixes 8/9 criteria in section 5
-3. **Security headers** — one middleware class fixes most of section 4
-4. **`.env.example` documentation** — comments on existing variables fixes section 1
+| Section | Gap | Severity |
+|---------|-----|----------|
+| Logging | No explicit PII sanitisation configured | Low — no user PII is currently written to logs, but there is no structural protection if logging is extended |
+| Security Headers | CSP not configured or explicitly deferred | Low — a pure JSON API has minimal CSP attack surface, but should be formally deferred in a comment or ticket |
