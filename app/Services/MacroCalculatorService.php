@@ -6,7 +6,7 @@ class MacroCalculatorService
 {
     private const ACTIVITY_MULTIPLIERS = [
         'sedentary'  => 1.2,
-        'light'      => 1.375,
+        'light'      => 1.4,
         'moderate'   => 1.55,
         'active'     => 1.725,
         'very_active' => 1.9,
