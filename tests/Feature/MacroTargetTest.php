@@ -17,7 +17,7 @@ $validPayload = [
     'sex'            => 'male',
     'activity_level' => 'moderate',
     'goal'           => 'maintain',
-    'preset'         => 'balanced',
+    'preset'         => 'standard',
 ];
 
 // ── Store ─────────────────────────────────────────────────────────────────────

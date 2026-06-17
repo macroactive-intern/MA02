@@ -20,7 +20,7 @@ class StoreMacroTargetRequest extends FormRequest
             'sex'            => ['required', 'in:male,female'],
             'activity_level' => ['required', 'in:sedentary,light,moderate,active,very_active'],
             'goal'           => ['required', 'in:lose,maintain,gain'],
-            'preset'         => ['nullable', 'in:balanced,high_protein,keto,low_carb'],
+            'preset'         => ['nullable', 'in:standard,high_protein,keto'],
         ];
     }
 }

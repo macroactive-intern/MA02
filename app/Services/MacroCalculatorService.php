@@ -19,10 +19,9 @@ class MacroCalculatorService
     ];
 
     private const PRESET_SPLITS = [
-        'balanced'     => ['protein' => 0.30, 'carbs' => 0.40, 'fat' => 0.30],
+        'standard'     => ['protein' => 0.30, 'carbs' => 0.40, 'fat' => 0.30],
         'high_protein' => ['protein' => 0.40, 'carbs' => 0.30, 'fat' => 0.30],
         'keto'         => ['protein' => 0.25, 'carbs' => 0.05, 'fat' => 0.70],
-        'low_carb'     => ['protein' => 0.35, 'carbs' => 0.10, 'fat' => 0.55],
     ];
 
     public function calculate(
